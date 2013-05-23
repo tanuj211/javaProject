@@ -17,6 +17,7 @@ public class Event {
 		featureVector.add(feature);
 	}
 
+	// Setter and getters
 	public int getEventID() {
 		return eventID;
 	}
