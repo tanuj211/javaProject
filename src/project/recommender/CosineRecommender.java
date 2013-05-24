@@ -1,7 +1,6 @@
 package project.recommender;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import project.event.Event;
@@ -10,11 +9,13 @@ public class CosineRecommender {
 	
 	static int [] [] similarityMatrix;
 	static int eventListLength;
+	static List<Event> eventList;
 
 	public static void main(String [] args) {
-		Event event1 = new Event(1);
-		Event event2 = new Event(2);
-		Event event3 = new Event(3);
+		Event event1 = new Event(11);
+		Event event2 = new Event(22);
+		Event event3 = new Event(33);
+		Event event4 = new Event(44);
 		
 		event1.addFeature(1);
 		event1.addFeature(6);
@@ -34,10 +35,17 @@ public class CosineRecommender {
 		event3.addFeature(2);
 		event3.addFeature(10);
 		
-		List<Event> eventList = new ArrayList<Event>();
+		event4.addFeature(1);
+		event4.addFeature(4);
+		event4.addFeature(5);
+		event4.addFeature(6);
+		event4.addFeature(2);
+		
+		eventList = new ArrayList<Event>();
 		eventList.add(event1);
 		eventList.add(event2);
 		eventList.add(event3);
+		eventList.add(event4);
 		
 		eventListLength = eventList.size();
 		
@@ -45,6 +53,8 @@ public class CosineRecommender {
 
 		//initialiseMatrix();
 		printMatrix(similarityMatrix);
+		getTopN(2);
+		printSimilarEvents();
 		
 //		List<Integer> feature1 = new ArrayList<Integer>();
 //		feature1.add(1);
@@ -66,6 +76,19 @@ public class CosineRecommender {
 //		int dotProduct = dotProduct(event1, event2);
 //		System.out.println("The dot product is: " + dotProduct);
 			
+	}
+
+
+	private static void printSimilarEvents() {
+		for(int i = 0; i < eventListLength; i++) {
+			Event event = eventList.get(i);
+			List<Event> similarEvents = event.getSimilarEvents();
+			System.out.print("Similar events for Event with ID " + event.getEventID() + ": ");
+			for(Event similarEvent : similarEvents) {
+				System.out.print(similarEvent.getEventID() + ", ");
+			}
+			System.out.println();
+		}
 	}
 
 
@@ -116,6 +139,68 @@ public class CosineRecommender {
 			}
 			System.out.println();
 		}
+		System.out.println("----------------");
+	}
+	
+	private static void getTopN(int n) {
+		if(n > similarityMatrix.length) {
+			System.out.println("n is greater than similarity matrix's row length!!");
+		}
+		int i,j;
+		int [] topIndexes = new int [n];
+		int [] topValues = new int [n];
+		for(i = 0; i < similarityMatrix.length; i++) {
+			Event event1 = eventList.get(i);
+			Event event2;
+			for(j = 0; j < n; j++) {
+				topIndexes[j] = j;
+				topValues[j] = similarityMatrix[i][j];
+			}
+			
+			for(j = n; j < similarityMatrix[i].length; j++) {
+				if(isGreatherThan(similarityMatrix[i][j], topValues)) {
+					int k = getSmallestValueIndex(topValues);
+					topIndexes[k] = j;
+					topValues[k] = similarityMatrix[i][j];
+				}
+			}
+			
+			System.out.print("Row " + i + ": ");
+			for(int a = 0; a < n; a++) {
+				event2 = eventList.get(topIndexes[a]);
+				// The following if is needed to prevent same event similarity to be included.
+				// Can add more conditions here to strengthen the condition for similar events
+				if(topIndexes[a] != i) {
+					System.out.print(topValues[a] + "(Index = " + topIndexes[a] + "), ");
+					event1.addSimilarEvent(event2);
+				}
+			}
+			System.out.println();
+		}
+		System.out.println("----------");
+		
+	}
+
+	private static int getSmallestValueIndex(int[] topValues) {
+		int smallestValue = topValues[0];
+		int smallestIndex = 0;
+		for(int i = 1; i < topValues.length; i++) {
+			if(topValues[i] < smallestValue) {
+				smallestValue = topValues[i];
+				smallestIndex = i;
+			}
+		}
+		return smallestIndex;
+	}
+
+
+	private static boolean isGreatherThan(int number, int[] topValues) {
+		for(int i = 0; i < topValues.length; i++) {
+			if(number > topValues[i]) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	
