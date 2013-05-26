@@ -1,85 +1,43 @@
 package project.recommender;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import project.event.Event;
 
-public class CosineRecommender {
+public class CosineSimilarity implements AlgorithmInterface {
 	
-	static int [] [] similarityMatrix;
-	static int eventListLength;
-	static List<Event> eventList;
+	private int [] [] similarityMatrix;
+	private int eventListLength;
+	private List<Event> eventList;
 
-	public static void main(String [] args) {
-		Event event1 = new Event(11);
-		Event event2 = new Event(22);
-		Event event3 = new Event(33);
-		Event event4 = new Event(44);
-		
-		event1.addFeature(1);
-		event1.addFeature(6);
-		event1.addFeature(7);
-		event1.addFeature(9);
-		event1.addFeature(10);
-		
-		event2.addFeature(1);
-		event2.addFeature(5);
-		event2.addFeature(7);
-		event2.addFeature(8);
-		event2.addFeature(9);
-		
-		event3.addFeature(4);
-		event3.addFeature(5);
-		event3.addFeature(6);
-		event3.addFeature(2);
-		event3.addFeature(10);
-		
-		event4.addFeature(1);
-		event4.addFeature(4);
-		event4.addFeature(5);
-		event4.addFeature(6);
-		event4.addFeature(2);
-		
-		eventList = new ArrayList<Event>();
-		eventList.add(event1);
-		eventList.add(event2);
-		eventList.add(event3);
-		eventList.add(event4);
-		
+	public CosineSimilarity(List<Event> eventList) {
+		this.eventList = eventList;
 		eventListLength = eventList.size();
-		
-		calculateSimilarity(eventList);
-
-		//initialiseMatrix();
-		printMatrix(similarityMatrix);
-		getTopN(2);
-		printSimilarEvents();
-		
-//		List<Integer> feature1 = new ArrayList<Integer>();
-//		feature1.add(1);
-//		feature1.add(3);
-//		feature1.add(5);
-//		feature1.add(6);
-//		feature1.add(10);
-//		
-//		List<Integer> feature2 = new ArrayList<Integer>();
-//		feature2.add(1);
-//		feature2.add(3);
-//		feature2.add(5);
-//		feature2.add(6);
-//		feature2.add(10);
-		
-//		Collections.sort(feature1);
-//		Collections.sort(feature2);
-		
-//		int dotProduct = dotProduct(event1, event2);
-//		System.out.println("The dot product is: " + dotProduct);
-			
 	}
 
 
-	private static void printSimilarEvents() {
+	@Override
+	public void runEventEvent() {
+		calculateSimilarity(eventList);
+		printMatrix(similarityMatrix);
+		getTopN(2);
+		printSimilarEvents();		
+	}
+	
+	// For optimised implementation
+	@Override
+	public void runUserEvent() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void runUserUser() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void printSimilarEvents() {
 		for(int i = 0; i < eventListLength; i++) {
 			Event event = eventList.get(i);
 			List<Event> similarEvents = event.getSimilarEvents();
@@ -91,8 +49,7 @@ public class CosineRecommender {
 		}
 	}
 
-
-	private static int dotProduct(Event event1, Event event2) {
+	private int dotProduct(Event event1, Event event2) {
 		int sum = 0;
 		List<Integer> featureVector1 = event1.getFeatureVector();
 		List<Integer> featureVector2 = event2.getFeatureVector();
@@ -105,7 +62,7 @@ public class CosineRecommender {
 		return sum;
 	}
 	
-	private static void initialiseMatrix() {
+	private void initialiseMatrix() {
 		similarityMatrix = new int [eventListLength] [eventListLength];
 		int i,j;
 		for (i = 0; i < eventListLength; i++) {
@@ -115,7 +72,7 @@ public class CosineRecommender {
 		}
 	}
 	
-	private static void calculateSimilarity(List<Event> eventList) {
+	private void calculateSimilarity(List<Event> eventList) {
 		initialiseMatrix();
 		int i,j;
 		for (i = 0; i < eventListLength; i++) {
@@ -131,7 +88,7 @@ public class CosineRecommender {
 		}
 	}
 	
-	private static void printMatrix(int[][] similarityMatrix) {
+	private void printMatrix(int[][] similarityMatrix) {
 		int i,j;
 		for(i = 0; i < similarityMatrix.length; i++) {
 			for(j = 0; j < similarityMatrix[i].length; j++) {
@@ -142,7 +99,7 @@ public class CosineRecommender {
 		System.out.println("----------------");
 	}
 	
-	private static void getTopN(int n) {
+	private void getTopN(int n) {
 		if(n > similarityMatrix.length) {
 			System.out.println("n is greater than similarity matrix's row length!!");
 		}
@@ -181,7 +138,7 @@ public class CosineRecommender {
 		
 	}
 
-	private static int getSmallestValueIndex(int[] topValues) {
+	private int getSmallestValueIndex(int[] topValues) {
 		int smallestValue = topValues[0];
 		int smallestIndex = 0;
 		for(int i = 1; i < topValues.length; i++) {
@@ -194,7 +151,7 @@ public class CosineRecommender {
 	}
 
 
-	private static boolean isGreatherThan(int number, int[] topValues) {
+	private boolean isGreatherThan(int number, int[] topValues) {
 		for(int i = 0; i < topValues.length; i++) {
 			if(number > topValues[i]) {
 				return true;
@@ -202,7 +159,9 @@ public class CosineRecommender {
 		}
 		return false;
 	}
-	
-	
+
+
+
+
 
 }
