@@ -6,17 +6,17 @@ import java.util.List;
 public class Event {
 
 	private int eventID;
-	private List<Integer> featureVector;
+	private List<Integer> featureIndexVector;
 	private List<Event> similarEvents;
 	
 	public Event(int eventId) {
 		eventID = eventId;
-		featureVector = new ArrayList<Integer>();
+		featureIndexVector = new ArrayList<Integer>();
 		similarEvents = new ArrayList<Event>();
 	}
 	
 	public void addFeature(int feature) {
-		featureVector.add(feature);
+		featureIndexVector.add(feature);
 	}
 	
 	public void addSimilarEvent(Event event) {
@@ -36,12 +36,12 @@ public class Event {
 		this.eventID = eventID;
 	}
 
-	public List<Integer> getFeatureVector() {
-		return featureVector;
+	public List<Integer> getFeatureIndexVector() {
+		return featureIndexVector;
 	}
 
-	public void setFeatureVector(List<Integer> featureVector) {
-		this.featureVector = featureVector;
+	public void setFeatureIndexVector(List<Integer> featureVector) {
+		this.featureIndexVector = featureVector;
 	}
 
 	

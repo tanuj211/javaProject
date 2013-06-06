@@ -1,5 +1,10 @@
 package project.recommender;
 
+import java.util.List;
+
+import project.event.Event;
+import project.user.User;
+
 public interface AlgorithmInterface {
 
 //	/*
@@ -14,9 +19,9 @@ public interface AlgorithmInterface {
 	 * involve exploiting properties of representation, etc. to minimise 
 	 * computation required.)
 	 */
-	public void runEventEvent();
+	public void runEventEvent(List<Event> eventList);
 
-	public void runUserEvent();
+	public void runUserEvent(List<User> userList, List<Event> eventList);
 
-	public void runUserUser();
+	public void runUserUser(List<User> userList);
 }
