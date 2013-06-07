@@ -6,6 +6,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import project.event.Event;
+import project.user.User;
 
 public class MySqlDBConnection {
 
@@ -25,13 +30,13 @@ public class MySqlDBConnection {
 			System.err.println("Unable to load the JDBC Driver.");
 			return;
 		}
-		initialiseConnection();
+		//initialiseConnection();
 	}
 
 	private void initialiseConnection() {
 		if (connection == null) {
 			try {
-				connection = DriverManager.getConnection(DB_LINK, DB_USERNAME, DB_PASSWORD);
+				this.connection = DriverManager.getConnection(DB_LINK, DB_USERNAME, DB_PASSWORD);
 			} catch (SQLException e) {
 				System.out.println("Connection failed :(");
 				e.printStackTrace();
@@ -47,7 +52,248 @@ public class MySqlDBConnection {
 		}
 		System.out.println();
 	}
+	
+	public List<Event> getEventListFromDB() {
+		initialiseConnection();
+		
+		List<Event> eventList = new ArrayList<Event>();
+		try {
+			String query = "SELECT * FROM event_features ORDER BY event_id, feature";
+			Statement statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery(query);
 
+			int event_id_tracker = -1;
+			Event event = null;
+
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				int event_id = rs.getInt("event_id");
+
+				int featureIndex = rs.getInt("feature");
+
+				// If the same event_id as before then add to FeatureIndex
+				if (event_id == event_id_tracker) {
+					event.addFeatureIndex(featureIndex);
+				} else {
+					// I.E. if the eventList already has at least one element
+					if (event_id_tracker > 0) {
+						eventList.add(event);
+					}
+					event = new Event(event_id);
+					event.addFeatureIndex(featureIndex);
+					event_id_tracker = event_id;
+				}
+			}
+			// ADD the last element
+			eventList.add(event);
+
+			/*
+			 * query =
+			 * "INSERT INTO test_table(string_field, int_field) VALUES('hello', 22)"
+			 * ; int val = statement.executeUpdate(query); // val == 1 for
+			 * success, 0 for failure if (val == 1) {
+			 * System.out.println("Insert performed successfully!"); } else {
+			 * System.out.println("Insert could not be performed"); }
+			 */
+			if (connection != null) {
+				connection.close();
+				connection = null;
+				System.out.println("Database Connection Closed");
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+
+		} catch (SQLException e) {
+			System.out
+					.println("Something is wrong with the query! or could not close variables");
+		}
+
+		return eventList;
+	}
+
+	public void insertSimilarEventsIntoDB(List<Event> eventList) {
+		System.out.println("Inserting recommendations into Database...");
+		initialiseConnection();
+
+		try {
+			String query;
+			int eventID, similarEventID;
+			
+			// First delete all old recommendations
+			query = "DELETE FROM similar_events";
+			Statement statement = connection.createStatement();
+			statement.execute(query);
+			System.out.println("Deleted old recommendations...");
+			
+			// Now insert all new recommendations
+			System.out.println("Adding new recommendations...");
+			statement = connection.createStatement();
+			connection.setAutoCommit(false);
+
+			for (Event event : eventList) {
+				eventID = event.getEventID();
+				List<Event> similarEvents = event.getSimilarEvents();
+				System.out.print("Similar events for Event with ID "
+						+ event.getEventID() + ": ");
+
+				for (Event similarEvent : similarEvents) {
+					similarEventID = similarEvent.getEventID();
+					query = "INSERT INTO similar_events(event_id, similar_event_id, value)"
+							+ " VALUES("
+							+ eventID
+							+ ", "
+							+ similarEventID
+							+ ", " + 1 + ")";
+
+					System.out.print(similarEvent.getEventID() + ", ");
+
+					statement.addBatch(query);
+				}
+
+				statement.executeBatch();
+				connection.commit();
+
+				System.out.println();
+			}
+
+			if (connection != null) {
+				connection.close();
+				connection = null;
+				System.out.println("Database Connection Closed");
+
+			}
+			if (statement != null) {
+				statement.close();
+			}
+
+		} catch (SQLException e) {
+			System.out
+					.println("Something is wrong with the query! or could not close variables");
+		}
+	}
+	
+	public List<User> getUserListFromDB() {
+		initialiseConnection();
+		
+		List<User> userList = new ArrayList<User>();
+		try {
+			String query = "SELECT * FROM user_features ORDER BY user_id, feature";
+			Statement statement = connection.createStatement();
+			ResultSet rs = statement.executeQuery(query);
+
+			int user_id_tracker = -1;
+			User user = null;
+
+			while (rs.next()) {
+				int id = rs.getInt("id");
+				int user_id = rs.getInt("user_id");
+
+				int featureIndex = rs.getInt("feature");
+				int featureValue = rs.getInt("value");
+
+				// If the same event_id as before then add to FeatureIndex
+				if (user_id == user_id_tracker) {
+					user.addFeatureIndex(featureIndex);
+					user.addFeatureValue(featureValue);
+				} else {
+					// I.E. if the eventList already has at least one element
+					if (user_id_tracker > 0) {
+						userList.add(user);
+					}
+					user = new User(user_id);
+					user.addFeatureIndex(featureIndex);
+					user.addFeatureValue(featureValue);
+					user_id_tracker = user_id;
+				}
+			}
+			// ADD the last element
+			userList.add(user);
+
+			if (connection != null) {
+				connection.close();
+				connection = null;
+				System.out.println("Database Connection Closed");
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+
+		} catch (SQLException e) {
+			System.out
+					.println("Something is wrong with the query! or could not close variables");
+		}
+
+		return userList;
+	}
+
+	public void insertContentBasedRecommendationsIntoDB(List<User> userList) {
+		System.out.println("Inserting Event recommendations into Database...");
+		initialiseConnection();
+
+		try {
+			String query;
+			int userID, recommendedEventID;
+			
+			// First delete all old recommendations
+			query = "DELETE FROM content_based_recommendations";
+			Statement statement = connection.createStatement();
+			statement.execute(query);
+			System.out.println("Deleted old recommendations...");
+			
+			// Now insert all new recommendations
+			System.out.println("Adding new recommendations...");
+			statement = connection.createStatement();
+			connection.setAutoCommit(false);
+
+			for (User user : userList) {
+				userID = user.getUserID();
+				List<Event> recommendedEvents = user.getRecommendedEvents();
+				System.out.print("Recommended events for User with ID "
+						+ user.getUserID() + ": ");
+
+				for (Event recommendedEvent : recommendedEvents) {
+					recommendedEventID = recommendedEvent.getEventID();
+					query = "INSERT INTO content_based_recommendations(user_id, event_id)"
+							+ " VALUES("
+							+ userID
+							+ ", "
+							+ recommendedEventID
+							+ ")";
+
+					System.out.print(recommendedEventID + ", ");
+
+					statement.addBatch(query);
+				}
+
+				statement.executeBatch();
+				connection.commit();
+
+				System.out.println();
+			}
+
+			if (connection != null) {
+				connection.close();
+				connection = null;
+				System.out.println("Database Connection Closed");
+
+			}
+			if (statement != null) {
+				statement.close();
+			}
+
+		} catch (SQLException e) {
+			System.out
+					.println("Something is wrong with the query! or could not close variables");
+		}
+	}
+	
 	public Connection getConnection() {
 		return connection;
 	}
@@ -55,4 +301,5 @@ public class MySqlDBConnection {
 	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}
+
 }

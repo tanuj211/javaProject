@@ -118,6 +118,8 @@ public class CosineSimilarity implements AlgorithmInterface {
 			}
 			System.out.println();
 		}
+		System.out.println();
+
 	}
 	
 	/*
@@ -152,7 +154,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 	}
 	
 	private void getTopNUserEvent(int n) {
-		if (n > similarityMatrix.length) {
+		if (n > similarityMatrix[0].length) {
 			System.out.println("n is greater than similarity matrix's row length!!");
 		}
 

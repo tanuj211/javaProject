@@ -1,8 +1,10 @@
 package project.recommender;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.database.MySqlDBConnection;
 import project.event.Event;
 import project.user.User;
 
@@ -16,11 +18,57 @@ public class UserEventRecommender implements RecommenderInterface{
 
 	@Override
 	public void run() {
-		List<User> userList = getUserList();
-		List<Event> eventList = getEventList();
-		algorithm.runUserEvent(userList, eventList);
+//		List<User> userList = getUserList();
+//		List<Event> eventList = getEventList();
+//		algorithm.runUserEvent(userList, eventList);
+		
+		MySqlDBConnection dbConnection = null;
+		try {
+			dbConnection = new MySqlDBConnection();
+			List<Event> eventList = dbConnection.getEventListFromDB();
+			List<User> userList = dbConnection.getUserListFromDB();
+			printEventList(eventList);
+			printUserList(userList);
+			algorithm.runUserEvent(userList, eventList);
+			dbConnection.insertContentBasedRecommendationsIntoDB(userList);
+		} catch (SQLException e) {
+			System.out.println("Error getting DB Connection");
+			return;
+		}
 	}
 	
+	private void printUserList(List<User> userList) {
+		for (User user : userList) {
+			System.out.println("User ID: " + user.getUserID());
+			System.out.print("Feature Index Vector: ");
+			for (int i : user.getFeatureIndexVector()) {
+				System.out.print(i + ", ");
+			}
+			System.out.println();
+			System.out.print("Feature Value Vector: ");
+			for (int i : user.getFeatureValueVector()) {
+				System.out.print(i + ", ");
+			}
+			
+			System.out.println();
+			System.out.println("--------------------------");
+		}
+		System.out.println();
+	}
+
+	private void printEventList(List<Event> eventList) {
+		for (Event event : eventList) {
+			System.out.println("Event ID: " + event.getEventID());
+			System.out.print("Feature Index Vector: ");
+			for (int i : event.getFeatureIndexVector()) {
+				System.out.print(i + ", ");
+			}
+			System.out.println();
+			System.out.println("--------------------------");
+		}
+		System.out.println();
+	}
+
 	private List<User> getUserList() {
 		User user1 = new User(1);
 		User user2 = new User(2);
