@@ -19,8 +19,8 @@ public class Controller {
 		System.out.println("Running....");
 		System.out.println();
 	
-		AlgorithmInterface algorithm = new PearsonCorrelation();
-		RecommenderInterface recommender = new UserUserRecommender(algorithm);
+		AlgorithmInterface algorithm = new CosineSimilarity();
+		RecommenderInterface recommender = new EventEventRecommender(algorithm);
 		recommender.run();
 	}
 }

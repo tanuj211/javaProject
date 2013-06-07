@@ -7,7 +7,7 @@ import project.user.User;
 
 public class PearsonCorrelation implements AlgorithmInterface{
 	
-	private static final int VECTOR_LENGTH = 10;
+	private static final int VECTOR_LENGTH = 25;
 
 	private double[][] similarityMatrix;
 

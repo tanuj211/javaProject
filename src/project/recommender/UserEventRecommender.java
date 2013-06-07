@@ -94,29 +94,29 @@ public class UserEventRecommender implements RecommenderInterface{
 		Event event3 = new Event(33);
 		Event event4 = new Event(44);
 
-		event1.addFeature(1);
-		event1.addFeature(6);
-		event1.addFeature(7);
-		event1.addFeature(9);
-		event1.addFeature(10);
+		event1.addFeatureIndex(1);
+		event1.addFeatureIndex(6);
+		event1.addFeatureIndex(7);
+		event1.addFeatureIndex(9);
+		event1.addFeatureIndex(10);
 
-		event2.addFeature(1);
-		event2.addFeature(5);
-		event2.addFeature(7);
-		event2.addFeature(8);
-		event2.addFeature(9);
+		event2.addFeatureIndex(1);
+		event2.addFeatureIndex(5);
+		event2.addFeatureIndex(7);
+		event2.addFeatureIndex(8);
+		event2.addFeatureIndex(9);
 
-		event3.addFeature(4);
-		event3.addFeature(5);
-		event3.addFeature(6);
-		event3.addFeature(2);
-		event3.addFeature(10);
+		event3.addFeatureIndex(4);
+		event3.addFeatureIndex(5);
+		event3.addFeatureIndex(6);
+		event3.addFeatureIndex(2);
+		event3.addFeatureIndex(10);
 
-		event4.addFeature(1);
-		event4.addFeature(3);
-		event4.addFeature(5);
-		event4.addFeature(7);
-		event4.addFeature(9);
+		event4.addFeatureIndex(1);
+		event4.addFeatureIndex(3);
+		event4.addFeatureIndex(5);
+		event4.addFeatureIndex(7);
+		event4.addFeatureIndex(9);
 
 		List<Event> eventList;
 		eventList = new ArrayList<Event>();

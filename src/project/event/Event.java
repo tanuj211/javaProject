@@ -15,7 +15,7 @@ public class Event {
 		similarEvents = new ArrayList<Event>();
 	}
 	
-	public void addFeature(int feature) {
+	public void addFeatureIndex(int feature) {
 		featureIndexVector.add(feature);
 	}
 	
