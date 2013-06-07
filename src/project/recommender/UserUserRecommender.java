@@ -1,8 +1,11 @@
 package project.recommender;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.database.MySqlDBConnection;
+import project.event.Event;
 import project.user.User;
 
 public class UserUserRecommender implements RecommenderInterface{
@@ -15,8 +18,39 @@ public class UserUserRecommender implements RecommenderInterface{
 
 	@Override
 	public void run() {
-		List<User> userList = getUserList();
-		algorithm.runUserUser(userList);
+		//List<User> userList = getUserList();
+		//algorithm.runUserUser(userList);
+		
+		MySqlDBConnection dbConnection = null;
+		try {
+			dbConnection = new MySqlDBConnection();
+			List<User> userList = dbConnection.getUserListFromDB();
+			printUserList(userList);
+			algorithm.runUserUser(userList);
+			//dbConnection.insertCollaborativeRecommendationsIntoDB(userList);
+		} catch (SQLException e) {
+			System.out.println("Error getting DB Connection");
+			return;
+		}
+	}
+	
+	private void printUserList(List<User> userList) {
+		for (User user : userList) {
+			System.out.println("User ID: " + user.getUserID());
+			System.out.print("Feature Index Vector: ");
+			for (int i : user.getFeatureIndexVector()) {
+				System.out.print(i + ", ");
+			}
+			System.out.println();
+			System.out.print("Feature Value Vector: ");
+			for (int i : user.getFeatureValueVector()) {
+				System.out.print(i + ", ");
+			}
+			
+			System.out.println();
+			System.out.println("--------------------------");
+		}
+		System.out.println();
 	}
 
 	private List<User> getUserList() {

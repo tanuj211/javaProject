@@ -20,7 +20,7 @@ public class Controller {
 		System.out.println();
 	
 		AlgorithmInterface algorithm = new CosineSimilarity();
-		RecommenderInterface recommender = new EventEventRecommender(algorithm);
+		RecommenderInterface recommender = new UserUserRecommender(algorithm);
 		recommender.run();
 	}
 }
