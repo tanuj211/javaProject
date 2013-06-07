@@ -7,7 +7,6 @@ import project.user.User;
 
 public class PearsonCorrelation implements AlgorithmInterface{
 	
-	private static final int VECTOR_LENGTH = 25;
 
 	private double[][] similarityMatrix;
 
@@ -129,7 +128,7 @@ public class PearsonCorrelation implements AlgorithmInterface{
 		double user1Denominator = 0;
 		double user2Denominator = 0;;
 		
-		for(int i = 1; i <= VECTOR_LENGTH; i++) {
+		for(int i = 1; i <= User.VECTOR_LENGTH; i++) {
 			double user1Value;
 			double user2Value;
 			if (user1FeatureIndexVector.contains(i)) {
@@ -165,7 +164,7 @@ public class PearsonCorrelation implements AlgorithmInterface{
 		for (int i : user1FeatureValueVector) {
 			sum += i;
 		}
-		return sum/VECTOR_LENGTH;
+		return sum/User.VECTOR_LENGTH;
 	}
 
 	private void initialiseMatrix(int rowSize, int columnSize) {

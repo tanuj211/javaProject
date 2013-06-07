@@ -7,7 +7,7 @@ import project.user.User;
 
 public class CosineSimilarity implements AlgorithmInterface {
 
-	private int[][] similarityMatrix;
+	private double[][] similarityMatrix;
 
 	private List<Event> eventList;
 	private int eventListLength;
@@ -70,7 +70,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		System.out.println("----TOP " + n + " Events for each User----");
 		int i, j;
 		int[] topIndexes = new int[n];
-		int[] topValues = new int[n];
+		double[] topValues = new double[n];
 		for (i = 0; i < similarityMatrix.length; i++) {
 			Event event1 = eventList.get(i);
 			Event event2;
@@ -161,7 +161,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		System.out.println("----TOP " + n + " Events for each User----");
 		int i, j;
 		int[] topIndexes = new int[n];
-		int[] topValues = new int[n];
+		double[] topValues = new double[n];
 		for (i = 0; i < similarityMatrix.length; i++) {
 
 			for (j = 0; j < n; j++) {
@@ -206,7 +206,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		for (i = 0; i < userListLength; i++) {
 			User user = userList.get(i);
 			Event event;
-			int dotProduct = 0;
+			double dotProduct = 0;
 			for (j = 0; j < eventListLength; j++) {
 				event = eventList.get(j);
 				dotProduct = dotProductUserEvent(user, event);
@@ -215,16 +215,16 @@ public class CosineSimilarity implements AlgorithmInterface {
 		}
 	}
 
-	private int dotProductUserEvent(User user, Event event) {
-		int sum = 0;
-		List<Integer> userFeatureValueVector = user.getNormalisedFeatureValueVector();
+	private double dotProductUserEvent(User user, Event event) {
+		double sum = 0;
+		List<Double> userFeatureValueVector = user.getNormalisedFeatureValueVector();
 		List<Integer> userFeatureIndexVector = user.getFeatureIndexVector();
 		List<Integer> eventFeatureIndexVector = event.getFeatureIndexVector();
 		int index = 0;
 		for (int i : userFeatureIndexVector) {
 			if (eventFeatureIndexVector.contains(i)) {
 				index = userFeatureIndexVector.indexOf(i);
-				sum += userFeatureValueVector.get(index);
+				sum += userFeatureValueVector.get(index) / Math.sqrt(5);
 			}
 			//index++;
 		}
@@ -268,7 +268,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		System.out.println("----TOP " + n + " Users for each User----");
 		int i, j;
 		int[] topIndexes = new int[n];
-		int[] topValues = new int[n];
+		double[] topValues = new double[n];
 		for (i = 0; i < similarityMatrix.length; i++) {
 			for (j = 0; j < n; j++) {
 				topIndexes[j] = j;
@@ -311,7 +311,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		for (i = 0; i < userListLength; i++) {
 			User user1 = userList.get(i);
 			User user2;
-			int dotProduct = 0;
+			double dotProduct = 0;
 			for (j = i + 1; j < userListLength; j++) {
 				user2 = userList.get(j);
 				dotProduct = dotProductUserUser(user1, user2);
@@ -321,12 +321,12 @@ public class CosineSimilarity implements AlgorithmInterface {
 		}
 	}
 
-	private int dotProductUserUser(User user1, User user2) {
-		int sum = 0;
-		List<Integer> user1FeatureValueVector = user1.getNormalisedFeatureValueVector();
+	private double dotProductUserUser(User user1, User user2) {
+		double sum = 0;
+		List<Double> user1FeatureValueVector = user1.getNormalisedFeatureValueVector();
 		List<Integer> user1FeatureIndexVector = user1.getFeatureIndexVector();
 		
-		List<Integer> user2FeatureValueVector = user2.getNormalisedFeatureValueVector();
+		List<Double> user2FeatureValueVector = user2.getNormalisedFeatureValueVector();
 		List<Integer> user2FeatureIndexVector = user2.getFeatureIndexVector();
 		
 		//int index = 0;
@@ -346,7 +346,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 	 */
 	
 	private void initialiseMatrix(int rowSize, int columnSize) {
-		similarityMatrix = new int[rowSize][columnSize];
+		similarityMatrix = new double[rowSize][columnSize];
 		int i, j;
 		for (i = 0; i < rowSize; i++) {
 			for (j = 0; j < columnSize; j++) {
@@ -355,7 +355,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		}
 	}
 
-	private void printMatrix(int[][] similarityMatrix) {
+	private void printMatrix(double[][] similarityMatrix) {
 		int i, j;
 		
 		System.out.println("-----SIMILARITY MATRIX-------");
@@ -369,8 +369,8 @@ public class CosineSimilarity implements AlgorithmInterface {
 		System.out.println();
 	}
 
-	private int getSmallestValueIndex(int[] topValues) {
-		int smallestValue = topValues[0];
+	private int getSmallestValueIndex(double[] topValues) {
+		double smallestValue = topValues[0];
 		int smallestIndex = 0;
 		for (int i = 1; i < topValues.length; i++) {
 			if (topValues[i] < smallestValue) {
@@ -381,7 +381,7 @@ public class CosineSimilarity implements AlgorithmInterface {
 		return smallestIndex;
 	}
 
-	private boolean isGreatherThan(int number, int[] topValues) {
+	private boolean isGreatherThan(double number, double[] topValues) {
 		for (int i = 0; i < topValues.length; i++) {
 			if (number > topValues[i]) {
 				return true;

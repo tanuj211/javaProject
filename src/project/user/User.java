@@ -6,6 +6,8 @@ import java.util.List;
 import project.event.Event;
 
 public class User {
+	
+	public static final int VECTOR_LENGTH = 25;
 
 	private int userID;
 	private List<Integer> featureIndexVector;
@@ -72,8 +74,20 @@ public class User {
 		this.featureValueVector = featureValueVector;
 	}
 
-	public List<Integer> getNormalisedFeatureValueVector() {
-		return featureValueVector;
+	public List<Double> getNormalisedFeatureValueVector() {
+		List<Double> normalisedFeatureValueVector = new ArrayList<Double>();
+		int squaredSum = 0;
+		
+		for (Integer value : featureValueVector) {
+			squaredSum += Math.pow(value,2);
+		}
+		double magnitude = Math.sqrt(squaredSum);
+		
+		for (Integer value : featureValueVector) {
+			normalisedFeatureValueVector.add(value/magnitude);
+		}
+		
+		return normalisedFeatureValueVector;
 	}
 	
 }
