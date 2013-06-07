@@ -24,6 +24,26 @@ public class UserUserRecommender implements RecommenderInterface{
 		User user2 = new User(2);
 		User user3 = new User(3);
 		User user4 = new User(4);
+		User small1 = new User(5);
+		User small2 = new User(6);
+		
+		small1.addFeatureIndex(1);
+		small1.addFeatureIndex(3);
+		small1.addFeatureIndex(5);
+		
+		small1.addFeatureValue(3);
+		small1.addFeatureValue(3);
+		small1.addFeatureValue(3);
+		
+		small2.addFeatureIndex(1);
+		small2.addFeatureIndex(2);
+		small2.addFeatureIndex(3);
+		small2.addFeatureIndex(4);
+		
+		small2.addFeatureValue(4);
+		small2.addFeatureValue(3);
+		small2.addFeatureValue(1);
+		small2.addFeatureValue(4);
 		
 		user1.addFeatureIndex(1);
 		user1.addFeatureIndex(3);
@@ -83,6 +103,8 @@ public class UserUserRecommender implements RecommenderInterface{
 		userList.add(user2);
 		userList.add(user3);
 		userList.add(user4);
+//		userList.add(small1);
+//		userList.add(small2);
 		return userList;
 	}
 }

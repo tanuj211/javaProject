@@ -8,6 +8,7 @@ import project.event.Event;
 import project.recommender.AlgorithmInterface;
 import project.recommender.CosineSimilarity;
 import project.recommender.EventEventRecommender;
+import project.recommender.PearsonCorrelation;
 import project.recommender.RecommenderInterface;
 import project.recommender.UserEventRecommender;
 import project.recommender.UserUserRecommender;
@@ -18,8 +19,8 @@ public class Controller {
 		System.out.println("Running....");
 		System.out.println();
 	
-		AlgorithmInterface algorithm = new CosineSimilarity();
-		RecommenderInterface recommender = new EventEventRecommender(algorithm);
+		AlgorithmInterface algorithm = new PearsonCorrelation();
+		RecommenderInterface recommender = new UserUserRecommender(algorithm);
 		recommender.run();
 	}
 }
