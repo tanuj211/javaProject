@@ -302,4 +302,148 @@ public class MySqlDBConnection {
 		this.connection = connection;
 	}
 
+	public void insertCollaborativeRecommendationsIntoDB(List<User> userList) {
+		compileSimilarUsersEventList(userList);
+		insertSimilarUsersEventList(userList);
+	}
+	
+	private void compileSimilarUsersEventList(List<User> userList) {
+		initialiseConnection();
+		Statement statement = null;
+		ResultSet rs = null;
+		
+		System.out.println("Compiling Events from Similar Users...");
+
+		for (User user : userList) {
+			List<Integer> globalEventIDList = new ArrayList<Integer>();// For similar User's Events
+			List<Integer> globalEventCountList = new ArrayList<Integer>();// Corresponding counts
+			
+			List<User> similarUsers = user.getSimilarUsers();
+			for (User similarUser : similarUsers) {
+				int similarUserId = similarUser.getUserID();
+				try {
+					String query = "SELECT event_id " +
+							"FROM attendees " +
+							"WHERE user_id = " + similarUserId;
+					statement = connection.createStatement();
+					rs = statement.executeQuery(query);
+		
+					while (rs.next()) {
+						int event_id = rs.getInt("event_id");
+						if(globalEventIDList.contains(event_id)) {
+							int index = globalEventIDList.indexOf(event_id);
+							int oldCount = globalEventCountList.get(index);
+							globalEventCountList.set(index, oldCount + 1);
+						} else {
+							globalEventIDList.add(event_id);
+							globalEventCountList.add(1);
+						}
+					}
+					
+					
+				} catch (SQLException e) {
+					System.out.println("Something is wrong with the query!");
+				} 
+			}
+			printEventTally(globalEventIDList, globalEventCountList);
+			user.setSimilarUsersEventIDList(globalEventIDList);
+			user.setSimilarUsersEventCountList(globalEventCountList);
+			System.out.println();
+		}
+		
+		try {
+			if (connection != null) {
+				connection.close();
+				connection = null;
+				System.out.println("Database Connection Closed");
+			}
+			if (statement != null) {
+				statement.close();
+			}
+			if (rs != null) {
+				rs.close();
+			}
+		} catch (SQLException e) {
+			System.out.println("Could not close variables!");
+		}
+	}
+	
+	
+	private void insertSimilarUsersEventList(List<User> userList) {
+		System.out.println("Inserting Collaborative Event recommendations into Database...");
+		initialiseConnection();
+
+		try {
+			String query;
+			int userID;
+			
+			// First delete all old recommendations
+			query = "DELETE FROM collaborative_recommendations";
+			Statement statement = connection.createStatement();
+			statement.execute(query);
+			System.out.println("Deleted old recommendations...");
+			
+			// Now insert all new recommendations
+			System.out.println("Adding new recommendations...");
+			statement = connection.createStatement();
+			connection.setAutoCommit(false);
+
+			for (User user : userList) {
+				userID = user.getUserID();
+				List<Integer> similarUsersEventIDList = user.getSimilarUsersEventIDList();
+				List<Integer> similarUsersEventCountList = user.getSimilarUsersEventCountList();
+				
+				printEventTally(similarUsersEventIDList, similarUsersEventCountList);
+				System.out.println();
+
+				for(int i = 0; i < similarUsersEventIDList.size(); i++) {
+					int recommendedEventID = similarUsersEventIDList.get(i);
+					int recommendedEventCount = similarUsersEventCountList.get(i);
+					query = "INSERT INTO collaborative_recommendations(user_id, event_id, count)"
+							+ " VALUES("
+							+ userID
+							+ ", "
+							+ recommendedEventID
+							+ ", "
+							+ recommendedEventCount
+							+ ")";
+
+					statement.addBatch(query);
+				}
+
+				statement.executeBatch();
+				connection.commit();
+
+				System.out.println();
+			}
+
+			if (connection != null) {
+				connection.close();
+				connection = null;
+				System.out.println("Database Connection Closed");
+
+			}
+			if (statement != null) {
+				statement.close();
+			}
+
+		} catch (SQLException e) {
+			System.out
+					.println("Something is wrong with the query! or could not close variables");
+		}
+			
+	}
+
+	private void printEventTally(List<Integer> globalEventIDList, List<Integer> globalCountList) {
+		if(globalEventIDList.size() != globalCountList.size()) {
+			System.out.println("INCONSISTENCY DETECTED!! Global EventID List and Global Count List not the same size!");
+		} else {
+			for(int i = 0; i < globalEventIDList.size(); i++) {
+				System.out.println("Count for Event with ID " + 
+									globalEventIDList.get(i) + ": " + 
+									globalCountList.get(i));
+			}
+		}
+	} 
+	
 }

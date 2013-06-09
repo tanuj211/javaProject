@@ -224,11 +224,11 @@ public class CosineSimilarity implements AlgorithmInterface {
 		for (int i : userFeatureIndexVector) {
 			if (eventFeatureIndexVector.contains(i)) {
 				index = userFeatureIndexVector.indexOf(i);
-				sum += userFeatureValueVector.get(index) / Math.sqrt(5);
+				sum += userFeatureValueVector.get(index);// Division by Math.sqrt(5) was here before
 			}
 			//index++;
 		}
-		return sum;
+		return sum / Math.sqrt(5);
 	}
 
 	/*

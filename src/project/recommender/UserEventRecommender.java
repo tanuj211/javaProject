@@ -30,7 +30,7 @@ public class UserEventRecommender implements RecommenderInterface{
 			printEventList(eventList);
 			printUserList(userList);
 			algorithm.runUserEvent(userList, eventList);
-			dbConnection.insertContentBasedRecommendationsIntoDB(userList);
+			//dbConnection.insertContentBasedRecommendationsIntoDB(userList);
 		} catch (SQLException e) {
 			System.out.println("Error getting DB Connection");
 			return;

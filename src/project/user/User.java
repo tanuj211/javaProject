@@ -14,6 +14,8 @@ public class User {
 	private List<Integer> featureValueVector;
 	private List<Event> recommendedEvents;
 	private List<User> similarUsers;
+	private List<Integer> similarUsersEventIDList;
+	private List<Integer> similarUsersEventCountList;
 	
 	public User(int userId) {
 		userID = userId;
@@ -21,8 +23,27 @@ public class User {
 		featureValueVector = new ArrayList<Integer>();
 		recommendedEvents = new ArrayList<Event>();
 		similarUsers = new ArrayList<User>();
+		similarUsersEventIDList = new ArrayList<Integer>();
+		similarUsersEventCountList = new ArrayList<Integer>();
 	}
 	
+	public List<Integer> getSimilarUsersEventIDList() {
+		return similarUsersEventIDList;
+	}
+
+	public void setSimilarUsersEventIDList(List<Integer> similarUsersEventIDList) {
+		this.similarUsersEventIDList = similarUsersEventIDList;
+	}
+
+	public List<Integer> getSimilarUsersEventCountList() {
+		return similarUsersEventCountList;
+	}
+
+	public void setSimilarUsersEventCountList(
+			List<Integer> similarUsersEventCountList) {
+		this.similarUsersEventCountList = similarUsersEventCountList;
+	}
+
 	public void addFeatureIndex(int featureIndex) {
 		featureIndexVector.add(featureIndex);
 	}

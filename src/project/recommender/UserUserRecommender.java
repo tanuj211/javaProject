@@ -27,7 +27,7 @@ public class UserUserRecommender implements RecommenderInterface{
 			List<User> userList = dbConnection.getUserListFromDB();
 			printUserList(userList);
 			algorithm.runUserUser(userList);
-			//dbConnection.insertCollaborativeRecommendationsIntoDB(userList);
+			dbConnection.insertCollaborativeRecommendationsIntoDB(userList);
 		} catch (SQLException e) {
 			System.out.println("Error getting DB Connection");
 			return;
